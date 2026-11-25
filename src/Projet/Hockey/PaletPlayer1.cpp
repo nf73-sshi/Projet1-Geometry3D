@@ -4,6 +4,7 @@
 #include "../Hockey/Table.h"
 #include "../SceneManager.h"
 #include "../Hockey/Game2.h"
+#include <algorithm>
 
 void PaletPlayer1::Start()
 {
@@ -53,14 +54,22 @@ void PaletPlayer1::HandleCollision()
 
 void PaletPlayer1::Control()
 {
-	gce::Vector2i32 mousePos = sr::GetMousePosition();
+	gce::Vector2f32 mousePos = sr::GetMousePosition();
+	mousePos.x /= App::GetWindow()->m_width;
+	mousePos.y /= App::GetWindow()->m_height;
+	mousePos.y = 1.f - std::clamp(mousePos.y, 0.f, 1.f);
 
-	gce::Vector3f32 direction2 = { -(float)(oldMousePos.x - mousePos.x), 0.f, (float)(oldMousePos.y - mousePos.y) };
+	mousePos.x = 2.f * (- 0.5f + mousePos.x);
+	mousePos.y = 1.5f * (-0.5f + mousePos.y);
 
-	if (sr::GetButton(sr::Mouse::LEFT))
-	{
-		Translate(direction2 * m_Speed * 0.25f * App::GetDeltaTime());
-	}
+	const gce::Vector3f32& pos = pScene->GetTable()->GetPosition();
+	const Rect& rect = pScene->GetTable()->GetRect();
 
+	gce::Vector3f32 t = {};
+	t.x = pos.x + rect.Xlength * mousePos.x;
+	t.y = GetPosition().y;
+	t.z = pos.z + rect.Zwidth * mousePos.y;
+
+	SetPosition(t);
 	oldMousePos = mousePos;
 }

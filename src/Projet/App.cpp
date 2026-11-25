@@ -9,6 +9,8 @@
 #include "Menu.h"
 #include "End.h"
 
+#include <algorithm>
+
 App* App::m_Inst = nullptr;
 
 void App::Shutdown()
@@ -100,11 +102,14 @@ void App::Run()
 
     while (m_pWindow->IsOpen() && running == true)
     {
+       /* Sleep(100);*/
         steady_clock::time_point currentTime = steady_clock::now();
         duration<float> deltatime = duration_cast<duration<float>>(currentTime - lastTime);
         lastTime = currentTime;
 
         dt = static_cast<float>(deltatime.count());
+
+        dt = std::clamp(dt, 1e-8f, 0.02f);
 
         Scene* currentScene = m_Scene_Manager.GetCurrentScene();
 

@@ -35,6 +35,9 @@ namespace sr
         
         bool IsOpen() const { return m_window.IsOpen(); }
 
+        uint32 m_width = 0;
+        uint32 m_height = 0;
+
     private:
         void RenderShadowPass();
         void RenderMainPass();
@@ -44,9 +47,6 @@ namespace sr
     private:
         gce::RenderWindow m_window;
         Renderer m_renderer;
-        
-        uint32 m_width = 0;
-        uint32 m_height = 0;
 
         std::vector<Geometry*> m_geoToDraw;
         std::vector<Text*> m_textToDraw;

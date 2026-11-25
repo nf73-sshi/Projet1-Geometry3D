@@ -48,7 +48,7 @@ void Puck::DecreaseSpeed()
 		m_Speed = 0;
 	else
 	{
-		m_Speed -= 10 * App::GetDeltaTime();
+		m_Speed *= std::exp(-0.5f * App::GetDeltaTime());
 	}
 }
 

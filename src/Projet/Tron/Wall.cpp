@@ -28,9 +28,9 @@ void Wall::Update()
 		float dt = App::GetDeltaTime();
 		float speed = 20.f;
 
-		gce::Vector3f32 rotation = GetRotation();
+		float ratio = 1.f - m_Progress_To_Collide / 3.f;
 			
-		SetRotation({ rotation.x + speed * dt, rotation.y + speed * dt, rotation.z + speed * dt});
+		SetRotation({ ratio * 90.f, ratio * 90.f, 0.f });
 
 		m_Progress_To_Collide -= dt;
 	}

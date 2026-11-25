@@ -34,33 +34,40 @@ void Palet::PuckCollision()
 	gce::Vector3f32 myPos = GetPosition(); 
 	gce::Vector3f32 puckPos = puck->GetPosition();
 
-	float squareDistance = std::pow(puckPos.x - myPos.x, 2) + std::pow(puckPos.z - myPos.z, 2);
+	float dx = puckPos.x - myPos.x;
+	float dy = puckPos.z - myPos.z;
+
+	float squareDistance = std::pow(dx, 2) + std::pow(dy, 2);
+	
+	if (squareDistance <= 0.0001f)
+		return;
 
 	if (squareDistance >= std::pow(puck->GetRadius() + GetRadius(), 2)) // If not colliding
 		return;
 
-	gce::Vector3f32 centerDirection = { (puckPos.x - myPos.x), 0.f, (puckPos.z - myPos.z) };
-	centerDirection = centerDirection.Normalize();
+	float dist = sqrtf(squareDistance);
+	gce::Vector3f32 centerDirection = { dx / dist, 0.f, dy / dist };
 
-	if (puck->GetDirection() == gce::Vector3f32(0.f, 0.f, 0.f))
+	gce::Vector3f32 puckDirection = puck->GetDirection();
+	if (puckDirection.Norm() <= 0.0001f)
 	{
 		puck->SetDirection(centerDirection);
 	}
+	else
+	{
+		float dot = puckDirection.DotProduct(centerDirection);
+		if (dot < 0.f)
+		{
+			gce::Vector3f32 reflected = (puckDirection - centerDirection * dot * 2.f).Normalize();
+			puck->SetDirection(reflected);
+		}
+	}
 
-	gce::Vector3f32 puckDirection = puck->GetDirection();
+	float penetration = m_Radius + puck->GetRadius() - sqrtf(squareDistance);
 
-	float dot = puckDirection.DotProduct(centerDirection);
+	float ratio = penetration / (m_Radius + puck->GetRadius());
 
-	gce::Vector3f32 reflected = puckDirection - centerDirection * dot * 2.f; // Physic Reflection : reflected = v - 2n * (v ° n)
-	reflected = reflected.Normalize();
+	puck->Translate(centerDirection * penetration * 1.1f);
 
-	puck->SetDirection(reflected);
-
-	float epsilon = 0.02f + puck->GetSpeed() * 0.01f; // Shifting for less multiple collisions
-
-	puck->Translate(centerDirection * epsilon);
-
-#ifdef FRICTIONS
-	puck->SetSpeed(1.f + puck->GetSpeed() * 1.1f);
-#endif
+	puck->SetSpeed(puck->GetSpeed() + ratio * puck->GetMaxSpeed());
 }

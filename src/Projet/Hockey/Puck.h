@@ -10,7 +10,7 @@ protected:
 
 	float m_Default_Speed;
 	float m_Speed;
-	const float m_Max_Speed = 180.f;
+	const float m_Max_Speed = 120.f;
 	gce::Vector3f32 m_Direction = { 0.f, 0.f, 0.f };
 
 	ShuffleGame* pScene = nullptr;
